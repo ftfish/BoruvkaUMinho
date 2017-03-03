@@ -10,7 +10,7 @@ Requirements
  * NVCC 5.0 (or higher) and NVIDIA GPU with support for compute capability 2.0 or higher
  * GCC 4.8 (or higher)
  * Intel TBB 4.2 (or higher)
- * [ModernGPU](http://nvlabs.github.io/moderngpu/) (or higher)
+ * [ModernGPU](http://github.com/NVlabs/nvbio-gpl/tree/master/contrib/moderngpu) (or higher)
 
 
 Usage
