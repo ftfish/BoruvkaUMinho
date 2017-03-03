@@ -1,4 +1,4 @@
-#include "boruvka_generic_cpu.hpp"
+#include "BoruvkaUMinho_OMP.hpp"
 
 #define ERROR_RETURN(retval) { fprintf(stderr, "Error %d %s:line %d: \n", retval,__FILE__,__LINE__); exit(retval); }   
 
@@ -165,7 +165,7 @@ unsigned int* BoruvkaUMinho_OMP(CSR_Graph *g, unsigned size){
 	omp_set_num_threads(size);
 	tbb::task_scheduler_init init(size);
 
-	unsigned size = omp_get_max_threads();
+	//unsigned size = omp_get_max_threads();
 	printf("running with %d threads\n", size);
 
 	unsigned int i;

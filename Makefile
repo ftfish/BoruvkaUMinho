@@ -1,12 +1,13 @@
 OPT = -O3
 
-TBB_INCLUDE_PATH = -I/home/cpd22840/tbb42/include
-TBB_LIBRARY_PATH = -L/home/cpd22840/lib
+TBB_INCLUDE_PATH = -I/home/ftfish/Dev/tbb2017_20170226oss/include/
+TBB_LIBRARY_PATH = -L/home/ftfish/Dev/tbb2017_20170226oss/build/linux_intel64_gcc_cc5.4.0_libc2.23_kernel4.4.0_release/
 
-MGPU_INCLUDE_PATH= -I/home/cpd22840/moderngpu/include 
+MGPU_PATH=/home/ftfish/Dev/nvbio-gpl/contrib/moderngpu
+MGPU_INCLUDE_PATH= -I$(MGPU_PATH)/include 
 
 NVCC = nvcc 
-CC = g++ -fopenmp -ltbb
+CC = g++
 
 
 WARNINGS = -Wall -Wextra
@@ -23,12 +24,13 @@ NVCC_SUPPRESS_WARNINGS = -Wno-long-long,-Wno-unused-value,-Wno-unused-local-type
 GENCODE_SM20 = -gencode arch=compute_20,code=sm_20
 GENCODE_SM30 = -gencode arch=compute_30,code=sm_30
 GENCODE_SM35 = -gencode arch=compute_35,code=sm_35
-GENCODE_FLAGS = $(GENCODE_SM20) $(GENCODE_SM30) $(GENCODE_SM35)
+GENCODE_SM52 = -gencode arch=compute_52,code=sm_52
+GENCODE_FLAGS = $(GENCODE_SM20) $(GENCODE_SM30) $(GENCODE_SM35) $(GENCODE_SM52)
 NVCCFLAGS = $(OPT) $(GENCODE_FLAGS) --compiler-options $(NVCC_WARNINGS)
 NVCC_INCLUDES = -Iinclude/ $(MGPU_INCLUDE_PATH)
 NVCC_LIBS = -Llib/
 
-CFLAGS = $(OPT) $(WARNINGS) $(SUPPRESS_WARNINGS) -std=c++11 
+CFLAGS = $(OPT) $(WARNINGS) $(SUPPRESS_WARNINGS) -std=c++11 -fopenmp
 LIBS =  -Llib/ $(TBB_LIBRARY_PATH) 
 INCLUDE = -Iinclude/ $(TBB_INCLUDE_PATH)
 
@@ -41,7 +43,7 @@ BoruvkaUMinho_GPU: apps/boruvka_gpu/main.cu
 	$(NVCC) $(NVCCFLAGS) $(NVCC_INCLUDES) $(NVCC_LIBS) -lBoruvkaUMinho_GPU $^ -o bin/$@
 
 BoruvkaUMinho_OMP: apps/boruvka_omp/main.cpp
-	$(CC) $(CFLAGS) $(INCLUDE) $(LIBS) -lBoruvkaUMinho_OMP $^ -o bin/$@
+	$(CC) $^ -o bin/$@ $(CFLAGS) $(INCLUDE) $(LIBS) -lBoruvkaUMinho_OMP -ltbb
 
 
 
@@ -51,9 +53,9 @@ BoruvkaUMinho_OMP: apps/boruvka_omp/main.cpp
 libs: libBoruvkaUMinho_OMP libBoruvkaUMinho_GPU
 
 libBoruvkaUMinho_GPU: src/BoruvkaUMinho_GPU.cu include/BoruvkaUMinho_GPU.cuh
-	$(NVCC) --compiler-options '-fPIC' -shared -o lib/libBoruvkaUMinho_GPU.so $(NVCCFLAGS) $(NVCC_INCLUDES) $(NVCC_LIBS)  src/BoruvkaUMinho_GPU.cu src/cu_CSR_Graph.cu /home/cpd22840/moderngpu/src/mgpucontext.cu /home/cpd22840/moderngpu/src/mgpuutil.cpp
+	$(NVCC) --compiler-options '-fPIC' -shared -o lib/libBoruvkaUMinho_GPU.so $(NVCCFLAGS) $(NVCC_INCLUDES) $(NVCC_LIBS)  src/BoruvkaUMinho_GPU.cu src/cu_CSR_Graph.cu $(MGPU_PATH)/src/mgpucontext.cu $(MGPU_PATH)/src/mgpuutil.cpp
 
-libBoruvkaUMinho_OMP: src/BoruvkaUMinho_OMP.cpp include/BoruvkaUMinho_OMP.hpp
+libBoruvkaUMinho_OMP: src/BoruvkaUMinho_OMP.cpp include/BoruvkaUMinho_OMP.hpp src/CSR_Graph.cpp include/CSR_Graph.hpp
 	$(CC) -fPIC -shared src/BoruvkaUMinho_OMP.cpp src/CSR_Graph.cpp -o lib/libBoruvkaUMinho_OMP.so $(CFLAGS) $(INCLUDE) $(LIBS)
 
 

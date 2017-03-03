@@ -43,6 +43,7 @@ static int ConvertSMVer2Cores(int major, int minor)
         { 0x21, 48 }, // Fermi Generation (SM 2.1) GF10x class
         { 0x30, 192}, // Kepler Generation (SM 3.0) GK10x class
         { 0x35, 192}, // Kepler Generation (SM 3.5) GK11x class
+        { 0x52, 128}, // Maxwell (SM 5.2) GTX 980M
 		{   -1, -1 }
 	};
 
