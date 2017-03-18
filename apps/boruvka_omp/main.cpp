@@ -11,14 +11,14 @@ int main(int argc, char *argv[]){
 	CSR_Graph *g = new CSR_Graph(argv[1]);
 	unsigned int *selected_edges = BoruvkaUMinho_OMP(g, atoi(argv[2]));
 
-	long unsigned int total_weight = 0;
+	weighttype total_weight = 0;
 
 	for(unsigned i = 1; i <= g->nedges ; i++)
 	{
 		if(selected_edges[i] == 1) total_weight += g->edgessrcwt[i];
 	}
 
-	printf("total weight: %lu \n", total_weight*2);
+	printf("total weight: %f \n", total_weight*2);
 	
 	free(selected_edges);
 	return 0;

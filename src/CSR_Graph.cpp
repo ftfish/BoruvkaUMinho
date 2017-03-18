@@ -43,7 +43,7 @@ void CSR_Graph::allocate_nodes(){
 
 void CSR_Graph::allocate_edges(){
 	edgessrcdst = (unsigned int*)calloc((nedges + 1), sizeof(unsigned int));
-	edgessrcwt = (unsigned int*)calloc((nedges + 1), sizeof(unsigned int));
+	edgessrcwt = (weighttype*)calloc((nedges + 1), sizeof(weighttype));
 }
 
 
@@ -74,7 +74,7 @@ int CSR_Graph::writeToFile(char *filename){
 	{
 		for(j = 0; j < getOutDegree(i); j++)
 		{
-			fprintf(fp, "%d %d %d\n", i, getDestination(i, j), getWeight(i, j));
+			fprintf(fp, "%d %d %f\n", i, getDestination(i, j), (double)getWeight(i, j));
 		}
 	}
 	
@@ -115,7 +115,7 @@ int CSR_Graph::readFromFile(char *filename){
 	*/
 
 	//unsigned out_tmp = 0;
-	while(fscanf(fp, "%d %d %d\n", &tmp_srcnode, &(edgessrcdst[i + 1]), &(edgessrcwt[i + 1])) != EOF)
+	while(fscanf(fp, "%d %d %lf\n", &tmp_srcnode, &(edgessrcdst[i + 1]), &(edgessrcwt[i + 1])) != EOF)
 	{
 		//edgessrcsrc[i + 1] = tmp_srcnode;
 		if(prev_node == tmp_srcnode)
@@ -153,7 +153,7 @@ int CSR_Graph::readFromFile(char *filename){
  * Given a source and destination node, tries to find the corresponding edge id
  *
  **/
-unsigned int CSR_Graph::findDestination(unsigned int src, unsigned int dst, unsigned wt){
+unsigned int CSR_Graph::findDestination(unsigned int src, unsigned int dst, weighttype wt){
 	unsigned int i;
 	unsigned int edge = getFirstEdge(src);
 	
@@ -177,7 +177,7 @@ unsigned CSR_Graph::find_duplicates(){
 		for(unsigned j = 0; j < getOutDegree(i); j++)
 		{
 			unsigned dst = getDestination(i,j);
-			unsigned wt = getWeight(i,j);
+			weighttype wt = getWeight(i,j);
 
 			for(unsigned k = j + 1; k < getOutDegree(i); k++)
 			{
@@ -224,24 +224,24 @@ bool CSR_Graph::check(){
 bool CSR_Graph::directed(){
 	unsigned i = 0, j = 0;
 	
-	std::map<std::tuple<unsigned, unsigned, unsigned>, unsigned> pending;
-	std::map<std::tuple<unsigned, unsigned, unsigned>, unsigned>::iterator find;
+	std::map<std::tuple<unsigned, unsigned, weighttype>, unsigned> pending;
+	std::map<std::tuple<unsigned, unsigned, weighttype>, unsigned>::iterator find;
 
 	for(i = 0; i < nnodes; i++)
 	{
 		for(j = 0; j < getOutDegree(i); j++)
 		{
 			unsigned dst = getDestination(i, j);
-			unsigned wt = getWeight(i, j);
+			weighttype wt = getWeight(i, j);
 			
-			find = pending.find(std::tuple<unsigned, unsigned, unsigned>(dst, i, wt));
+			find = pending.find(std::tuple<unsigned, unsigned, weighttype>(dst, i, wt));
 			
 			if(find == pending.end())
 			{
-				find = pending.find(std::tuple<unsigned, unsigned, unsigned>(i, dst, wt));
+				find = pending.find(std::tuple<unsigned, unsigned, weighttype>(i, dst, wt));
 				
 				if(find != pending.end()) find->second++;
-				else pending.insert(std::pair<std::tuple<unsigned, unsigned, unsigned>, unsigned>(std::tuple<unsigned, unsigned, unsigned>(i, dst, wt), 1));
+				else pending.insert(std::pair<std::tuple<unsigned, unsigned, weighttype>, unsigned>(std::tuple<unsigned, unsigned, weighttype>(i, dst, wt), 1));
 			}
 			else
 			{
@@ -356,8 +356,8 @@ bool CSR_Graph::connected(){
  * Computes the total weight of all the edges in the graph
  *
  **/
-long unsigned int CSR_Graph::getTotalWeight(){
-	long unsigned int total = 0;
+weighttype CSR_Graph::getTotalWeight(){
+	weighttype total = 0;
 	
 	for(unsigned int i = 1; i <= nedges; i++)
 	{

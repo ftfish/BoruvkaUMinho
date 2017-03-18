@@ -6,6 +6,8 @@ using namespace tbb;
 
 typedef unsigned T;
 
+typedef double weighttype;
+
 class Body {
 	T sum;
 	T* const y;
@@ -42,14 +44,14 @@ inline void swap(unsigned int* a, unsigned int* b){
 
 inline void find_min_per_vertex(CSR_Graph *g, unsigned int *vertex_minedge, unsigned int id){
 	unsigned min_edge = 0;
-	unsigned min_weight = UINT_MAX;
+	weighttype min_weight = UINT_MAX;
 	unsigned min_dst = g->nnodes;
 
 	unsigned edge = g->psrc[id];
 	unsigned last_edge = edge + g->outdegree[id];
 	for(; edge < last_edge; edge++)
 	{
-		unsigned wt = g->edgessrcwt[edge];
+		weighttype wt = g->edgessrcwt[edge];
 		unsigned dst = g->edgessrcdst[edge];
 		if(wt < min_weight || (wt == min_weight && dst < min_dst))
 		{

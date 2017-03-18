@@ -16,6 +16,8 @@
 #include <climits>
 #include <tuple>
 
+typedef double weighttype;
+
 class CSR_Graph{
 
 public:
@@ -30,14 +32,14 @@ public:
 	// first position of both these arrays act as null
 	// has nedges + 1 positions
 	unsigned int *edgessrcdst;  // maps each edge to its destination
-	unsigned int *edgessrcwt;   // maps each edge to its weight
+	weighttype *edgessrcwt;   // maps each edge to its weight
 	//unsigned int *edgessrcsrc;   // maps each edge to its source
 	
 	unsigned int getOutDegree(unsigned int src);
 	unsigned int getDestination(unsigned int src, unsigned int nthedge);
-	unsigned int getWeight(unsigned int src, unsigned int nthedge);
+	weighttype getWeight(unsigned int src, unsigned int nthedge);
 	unsigned int getFirstEdge(unsigned int src);
-	unsigned int findDestination(unsigned int src, unsigned int dst, unsigned wt);
+	unsigned int findDestination(unsigned int src, unsigned int dst, weighttype wt);
 	
 	int readFromFile(char *filename);
 	int writeToFile(char *filename);
@@ -51,7 +53,7 @@ public:
 	bool check();
 	bool directed();
 	void toString();
-	long unsigned int getTotalWeight();
+	weighttype getTotalWeight();
 	bool equals(CSR_Graph *g);
 	bool connected();
 	void traverse_graph(bool *visited, unsigned int node);
@@ -128,7 +130,7 @@ inline unsigned int CSR_Graph::getDestination(unsigned int src, unsigned int nth
  * Given a node and a edge number, returns the corresponding weight
  *
  **/
-inline unsigned int CSR_Graph::getWeight(unsigned int src, unsigned int nthedge){
+inline weighttype CSR_Graph::getWeight(unsigned int src, unsigned int nthedge){
 	if(src < nnodes && nthedge < getOutDegree(src))
 	{
 		unsigned int edge = getFirstEdge(src);
